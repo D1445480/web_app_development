@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="glass-card">
+            <h3 class="mb-4 fw-bold">{{ '編輯' if record else '新增' }}收支紀錄</h3>
+            <form method="POST" action="{{ url_for('record.edit', record_id=record.id) if record else url_for('record.new') }}">
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">收支類型</label>
+                    <select name="type" class="form-select" required>
+                        <option value="expense" {% if record and record.type == 'expense' %}selected{% endif %}>支出</option>
+                        <option value="income" {% if record and record.type == 'income' %}selected{% endif %}>收入</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">消費 / 收入分類</label>
+                    <select name="category_id" class="form-select" required>
+                        {% for c in categories %}
+                        <option value="{{ c.id }}" {% if record and record.category_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">金額</label>
+                    <input type="number" name="amount" class="form-control form-control-lg fw-bold" min="0" value="{{ record.amount if record else '' }}" placeholder="0" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">日期</label>
+                    <input type="date" name="date" class="form-control" value="{{ today }}" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted">備註 (可選)</label>
+                    <input type="text" name="note" class="form-control" value="{{ record.note if record else '' }}" placeholder="例：跟朋友吃晚餐...">
+                </div>
+
+                <div class="d-flex justify-content-between mt-5">
+                    <a href="{{ url_for('record.index') }}" class="btn btn-outline-secondary px-4">取消</a>
+                    <button type="submit" class="btn btn-premium px-5">儲存紀錄</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

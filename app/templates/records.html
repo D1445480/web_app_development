@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="glass-card mb-4">
+    <form method="GET" action="{{ url_for('record.index') }}" class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label">選擇月份</label>
+            <input type="month" name="month" class="form-control" value="{{ selected_month or '' }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">搜尋分類</label>
+            <select name="category_id" class="form-select">
+                <option value="">全部</option>
+                {% for c in categories %}
+                <option value="{{ c.id }}" {% if selected_cat|string == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-premium w-100">篩選記錄</button>
+        </div>
+    </form>
+</div>
+
+<div class="glass-card">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>收支明細清單</h4>
+        <a href="{{ url_for('record.new') }}" class="btn btn-premium btn-sm">新增紀錄</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover table-borderless align-middle text-white">
+            <thead>
+                <tr class="border-bottom border-secondary">
+                    <th>日期</th>
+                    <th>類型</th>
+                    <th>分類</th>
+                    <th>金額</th>
+                    <th>備註</th>
+                    <th class="text-end">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in records %}
+                <tr>
+                    <td>{{ r.date }}</td>
+                    <td class="{{ 'text-income' if r.type == 'income' else 'text-expense' }} fw-bold">{{ '收入' if r.type == 'income' else '支出' }}</td>
+                    <td><span class="badge bg-secondary">{{ r.category_name }}</span></td>
+                    <td>${{ r.amount }}</td>
+                    <td class="text-muted">{{ r.note }}</td>
+                    <td class="text-end text-nowrap">
+                        <a href="{{ url_for('record.edit', record_id=r.id) }}" class="btn btn-sm btn-outline-info">編輯</a>
+                        <form method="POST" action="{{ url_for('record.delete', record_id=r.id) }}" class="d-inline" onsubmit="return confirm('確定刪除此紀錄嗎？');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted">目前沒有符合條件的紀錄。</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

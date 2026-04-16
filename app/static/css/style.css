@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
+:root {
+    --bg-color: #0f172a; /* depth blue */
+    --surface-color: rgba(30, 41, 59, 0.7);
+    --surface-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent-blue: #3b82f6;
+    --accent-green: #10b981;
+    --accent-red: #ef4444;
+}
+
+body {
+    background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.glass-card {
+    background: var(--surface-color);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--surface-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+.glass-nav {
+    background: rgba(15, 23, 42, 0.8) !important;
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.text-income { color: var(--accent-green) !important; }
+.text-expense { color: var(--accent-red) !important; }
+
+/* Override bootstrap forms and inputs for dark glass theme */
+.form-control, .form-select {
+    background-color: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--surface-border);
+    color: var(--text-primary);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: rgba(15, 23, 42, 0.8);
+    color: var(--text-primary);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+}
+
+.btn-premium {
+    background: linear-gradient(to right, #3b82f6, #6366f1);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-premium:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    color: white;
+}
+
+table { color: var(--text-primary) !important; }
+.table-hover tbody tr:hover { background-color: rgba(255, 255, 255, 0.05) !important; color: white !important;}

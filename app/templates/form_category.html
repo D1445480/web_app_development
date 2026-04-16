@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="glass-card">
+            <h3 class="mb-4 fw-bold">{{ '編輯' if category else '新增' }}分類屬性</h3>
+            <form method="POST" action="{{ url_for('category.edit', category_id=category.id) if category else url_for('category.new') }}">
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">分類名稱</label>
+                    <input type="text" name="name" class="form-control" placeholder="例：遊戲課金" value="{{ category.name if category else '' }}" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">收支屬性</label>
+                    <select name="type" class="form-select" required>
+                        <option value="expense" {% if category and category.type == 'expense' %}selected{% endif %}>支出 (扣除餘額)</option>
+                        <option value="income" {% if category and category.type == 'income' %}selected{% endif %}>收入 (增加餘額)</option>
+                    </select>
+                </div>
+
+                <div class="mb-5">
+                    <label class="form-label text-muted">設定預算限額 (選填，僅支出狀態有效)</label>
+                    <input type="number" name="budget" class="form-control" min="0" placeholder="例如：2000" value="{{ category.budget if category and category.budget else '' }}">
+                    <div class="form-text text-secondary mt-2">設定後，每次花費若逼近此數字就會在首頁出現警告！</div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ url_for('category.index') }}" class="btn btn-outline-secondary px-4">取消</a>
+                    <button type="submit" class="btn btn-premium px-5">儲存分類設定</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

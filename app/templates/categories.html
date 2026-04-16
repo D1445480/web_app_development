@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">分類與預算統計 ({{ current_month }})</h2>
+    <a href="{{ url_for('category.new') }}" class="btn btn-premium">建立自訂分類</a>
+</div>
+
+<div class="row g-4">
+    {% for c in categories %}
+    <div class="col-md-4">
+        <div class="glass-card h-100 d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="m-0 fw-bold">{{ c.name }}</h5>
+                <span class="badge {{ 'bg-success' if c.type == 'income' else 'bg-danger' }}">{{ '收入' if c.type == 'income' else '支出' }}</span>
+            </div>
+            
+            <div class="flex-grow-1">
+                {% if c.type == 'expense' %}
+                    <div class="d-flex justify-content-between text-muted small mb-1">
+                        <span>本月總合: <strong class="text-white">${{ c.current_spent }}</strong></span>
+                        <span>預算額度: {% if c.budget %}${{ c.budget }}{% else %}無限制{% endif %}</span>
+                    </div>
+                    
+                    {% if c.budget %}
+                        {% set percent = (c.current_spent / c.budget * 100)|round|int %}
+                        {% set display_percent = 100 if percent > 100 else percent %}
+                        <div class="progress mt-2" style="height: 8px; background-color: rgba(255,255,255,0.1);">
+                            <div class="progress-bar {{ 'bg-danger' if percent >= 100 else 'bg-info' }}" role="progressbar" style="width: {{ display_percent }}%;"></div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+            
+            <hr class="border-secondary mt-4 mb-3">
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('category.edit', category_id=c.id) }}" class="btn btn-sm btn-outline-info flex-grow-1">編輯設定</a>
+                <form method="POST" action="{{ url_for('category.delete', category_id=c.id) }}" class="flex-grow-1" onsubmit="return confirm('警告：刪除分類將會連帶清空所有該分類下的記帳資料，確定嗎？');">
+                    <button type="submit" class="btn btn-sm btn-outline-danger w-100">刪除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center text-muted mt-5">
+        <p>目前系統內沒有分類設定。</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
