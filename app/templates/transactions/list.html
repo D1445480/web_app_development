@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}所有紀錄 - 個人記帳簿{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>收支紀錄列表</h2>
+    <a href="{{ url_for('transaction.new_transaction') }}" class="btn btn-primary shadow-sm">➕ 新增紀錄</a>
+</div>
+
+<!-- 搜尋與篩選表單 -->
+<div class="card shadow-sm border-0 mb-4 bg-light">
+    <div class="card-body">
+        <form action="{{ url_for('transaction.list_transactions') }}" method="GET" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="start_date" class="form-label text-muted small mb-1">開始日期</label>
+                <input type="date" class="form-control form-control-sm" id="start_date" name="start_date" value="{{ start_date or '' }}">
+            </div>
+            <div class="col-md-3">
+                <label for="end_date" class="form-label text-muted small mb-1">結束日期</label>
+                <input type="date" class="form-control form-control-sm" id="end_date" name="end_date" value="{{ end_date or '' }}">
+            </div>
+            <div class="col-md-3">
+                <label for="category_id" class="form-label text-muted small mb-1">類別篩選</label>
+                <select class="form-select form-select-sm" id="category_id" name="category_id">
+                    <option value="">所有類別</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if selected_category_id == cat.id|string %}selected{% endif %}>
+                        {{ cat.name }} ({{ '收入' if cat.type == 'income' else '支出' }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="keyword" class="form-label text-muted small mb-1">關鍵字 (項目說明)</label>
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control" id="keyword" name="keyword" placeholder="搜尋..." value="{{ keyword or '' }}">
+                    <button class="btn btn-primary" type="submit">🔍 篩選</button>
+                    <a href="{{ url_for('transaction.list_transactions') }}" class="btn btn-outline-secondary" title="清除條件">重設</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        {% if transactions %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">日期</th>
+                        <th>類型</th>
+                        <th>類別</th>
+                        <th>項目說明</th>
+                        <th class="text-end">金額</th>
+                        <th class="text-center pe-4">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for txn in transactions %}
+                    <tr>
+                        <td class="ps-4">{{ txn.date }}</td>
+                        <td>
+                            {% if txn.type == 'income' %}
+                                <span class="badge bg-success bg-opacity-75">收入</span>
+                            {% else %}
+                                <span class="badge bg-danger bg-opacity-75">支出</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ txn.category.name if txn.category else '未分類' }}</td>
+                        <td class="text-muted">{{ txn.description }}</td>
+                        <td class="text-end fw-bold">
+                            {% if txn.type == 'income' %}
+                                <span class="text-success">+{{ "%.2f"|format(txn.amount) }}</span>
+                            {% else %}
+                                <span class="text-danger">-{{ "%.2f"|format(txn.amount) }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center pe-4">
+                            <a href="{{ url_for('transaction.edit_transaction', id=txn.id) }}" class="btn btn-sm btn-outline-secondary">編輯</a>
+                            <form action="{{ url_for('transaction.delete_transaction', id=txn.id) }}" method="POST" class="d-inline" onsubmit="return confirm('確定要刪除這筆紀錄嗎？');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">刪除</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center text-muted my-5">
+            <h5>目前沒有任何收支紀錄</h5>
+            <p>點擊右上方按鈕開始記下第一筆帳目吧！</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

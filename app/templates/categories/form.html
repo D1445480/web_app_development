@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if category %}編輯類別{% else %}新增類別{% endif %} - 個人記帳簿
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow border-0">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h3 class="mb-0 text-center fw-bold">{% if category %}編輯類別{% else %}新增類別{% endif %}</h3>
+            </div>
+            <div class="card-body p-4">
+                <form action="{% if category %}{{ url_for('category.update_category', id=category.id) }}{% else %}{{ url_for('category.create_category') }}{% endif %}" method="POST">
+                    
+                    <div class="mb-4 text-center p-3 bg-light rounded">
+                        <div class="form-check form-check-inline me-4">
+                            <input class="form-check-input" type="radio" name="type" id="type_expense" value="expense" required
+                                {% if not category or category.type == 'expense' %}checked{% endif %}>
+                            <label class="form-check-label text-danger fw-bold" for="type_expense">支出</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="type" id="type_income" value="income" required
+                                {% if category and category.type == 'income' %}checked{% endif %}>
+                            <label class="form-check-label text-success fw-bold" for="type_income">收入</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="name" class="form-label text-muted">類別名稱 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-lg" id="name" name="name" required placeholder="例如：餐飲、交通、薪水..."
+                               value="{% if category %}{{ category.name }}{% endif %}">
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                            {% if category %}儲存變更{% else %}確認新增{% endif %}
+                        </button>
+                        <a href="{{ url_for('category.list_categories') }}" class="btn btn-light">取消並返回列表</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

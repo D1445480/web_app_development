@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from . import db
 
@@ -14,17 +15,84 @@ class Category(db.Model):
     transactions = db.relationship('Transaction', backref='category', lazy=True)
 
     @classmethod
+    def create(cls, data):
+        """
+        新增一筆類別記錄
+        :param data: dict，包含 name, type, is_default 等資料
+        :return: Category 物件 (成功) 或 None (失敗)
+        """
+        try:
+            new_category = cls(**data)
+            db.session.add(new_category)
+            db.session.commit()
+            return new_category
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f"Error creating Category: {e}")
+            return None
+
+    @classmethod
     def get_all(cls):
-        return cls.query.all()
-        
+        """
+        取得所有類別記錄
+        :return: Category 物件的列表
+        """
+        try:
+            return cls.query.all()
+        except Exception as e:
+            logging.error(f"Error fetching all Categories: {e}")
+            return []
+
     @classmethod
     def get_by_id(cls, category_id):
-        return cls.query.get(category_id)
-        
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-        
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+        """
+        取得單筆類別記錄
+        :param category_id: 類別 ID
+        :return: Category 物件 或 None
+        """
+        try:
+            return cls.query.get(category_id)
+        except Exception as e:
+            logging.error(f"Error fetching Category by ID {category_id}: {e}")
+            return None
+
+    @classmethod
+    def update(cls, category_id, data):
+        """
+        更新單筆類別記錄
+        :param category_id: 類別 ID
+        :param data: dict，包含要更新的欄位與值
+        :return: 更新後的 Category 物件 (成功) 或 None (失敗)
+        """
+        try:
+            category = cls.query.get(category_id)
+            if not category:
+                return None
+            for key, value in data.items():
+                if hasattr(category, key):
+                    setattr(category, key, value)
+            db.session.commit()
+            return category
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f"Error updating Category {category_id}: {e}")
+            return None
+
+    @classmethod
+    def delete(cls, category_id):
+        """
+        刪除單筆類別記錄
+        :param category_id: 類別 ID
+        :return: True (成功) 或 False (失敗)
+        """
+        try:
+            category = cls.query.get(category_id)
+            if not category:
+                return False
+            db.session.delete(category)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f"Error deleting Category {category_id}: {e}")
+            return False
