@@ -1,25 +1,24 @@
 from datetime import datetime
 from . import db
 
-class Category(db.Model):
-    __tablename__ = 'category'
+class Transaction(db.Model):
+    __tablename__ = 'transaction'
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(50), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
     type = db.Column(db.String(10), nullable=False) # 'income' or 'expense'
-    is_default = db.Column(db.Boolean, default=False)
+    date = db.Column(db.Date, nullable=False)
+    description = db.Column(db.String(200))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    # 關聯
-    transactions = db.relationship('Transaction', backref='category', lazy=True)
 
     @classmethod
     def get_all(cls):
-        return cls.query.all()
+        return cls.query.order_by(cls.date.desc(), cls.created_at.desc()).all()
         
     @classmethod
-    def get_by_id(cls, category_id):
-        return cls.query.get(category_id)
+    def get_by_id(cls, transaction_id):
+        return cls.query.get(transaction_id)
         
     def save(self):
         db.session.add(self)

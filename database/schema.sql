@@ -1,18 +1,25 @@
-CREATE TABLE IF NOT EXISTS categories (
+CREATE TABLE IF NOT EXISTS category (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    type TEXT NOT NULL CHECK(type IN ('income', 'expense')),
-    budget INTEGER,
-    created_at TEXT NOT NULL
+    type TEXT NOT NULL,
+    is_default BOOLEAN DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS records (
+CREATE TABLE IF NOT EXISTS "transaction" (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    amount INTEGER NOT NULL CHECK(amount >= 0),
-    type TEXT NOT NULL CHECK(type IN ('income', 'expense')),
+    amount REAL NOT NULL,
+    type TEXT NOT NULL,
+    date DATE NOT NULL,
+    description TEXT,
     category_id INTEGER NOT NULL,
-    date TEXT NOT NULL,
-    note TEXT,
-    created_at TEXT NOT NULL,
-    FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(category_id) REFERENCES category(id)
+);
+
+CREATE TABLE IF NOT EXISTS budget (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    month TEXT NOT NULL UNIQUE,
+    amount REAL NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
